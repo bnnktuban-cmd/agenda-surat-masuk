@@ -1,1 +1,1092 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Surat Masuk</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .header {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    .header-title h1 {
+      font-size: 28px;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+
+    .header-subtitle {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .user-info {
+      font-weight: 500;
+      color: #1e293b;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 8px;
+      color: white;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      color: #1e293b;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f8fafc;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 14px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+      color: #475569;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90%;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 2000;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.success {
+      background: #10b981;
+    }
+
+    .toast.error {
+      background: #ef4444;
+    }
+
+    .toast.info {
+      background: #3b82f6;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100%;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .login-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1e293b;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .login-subtitle {
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .confirm-dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 3000;
+      display: none;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .confirm-dialog.active {
+      display: block;
+    }
+
+    .confirm-dialog-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 2999;
+      display: none;
+    }
+
+    .confirm-dialog-backdrop.active {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn-sm {
+        width: 100%;
+      }
+
+      .header-title h1 {
+        font-size: 20px;
+      }
+
+      body {
+        padding: 10px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div id="app"></div>
+  <div class="confirm-dialog-backdrop" id="confirmBackdrop"></div>
+  <div class="confirm-dialog" id="confirmDialog">
+   <h3 style="margin-bottom: 16px; color: #1e293b;">Konfirmasi</h3>
+   <p id="confirmMessage" style="margin-bottom: 24px; color: #475569;"></p>
+   <div style="display: flex; gap: 12px; justify-content: flex-end;"><button class="btn btn-secondary" onclick="cancelConfirm()">Batal</button> <button class="btn btn-danger" onclick="executeConfirm()">Hapus</button>
+   </div>
+  </div>
+  <script>
+    // API Configuration
+    const API_BASE = '/.netlify/functions/sheets-api';
+
+    // State Management
+    let currentUser = null;
+    let allData = {
+      users: [],
+      surat: [],
+      instansi: null
+    };
+    let editingRecord = null;
+    let showRegister = false;
+    let pendingConfirmAction = null;
+
+    // Utility Functions
+    function generateId() {
+      return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    function showConfirm(message, action) {
+      const dialog = document.getElementById('confirmDialog');
+      const backdrop = document.getElementById('confirmBackdrop');
+      const messageEl = document.getElementById('confirmMessage');
+      
+      messageEl.textContent = message;
+      dialog.classList.add('active');
+      backdrop.classList.add('active');
+      pendingConfirmAction = action;
+    }
+
+    function cancelConfirm() {
+      const dialog = document.getElementById('confirmDialog');
+      const backdrop = document.getElementById('confirmBackdrop');
+      
+      dialog.classList.remove('active');
+      backdrop.classList.remove('active');
+      pendingConfirmAction = null;
+    }
+
+    function executeConfirm() {
+      if (pendingConfirmAction) {
+        pendingConfirmAction();
+      }
+      cancelConfirm();
+    }
+
+    function generateNomorAgenda(tanggalSurat) {
+      const date = new Date(tanggalSurat);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      
+      const sameDateSurats = allData.surat.filter(s => s.tanggalSurat === tanggalSurat);
+      const urutan = String(sameDateSurats.length + 1).padStart(3, '0');
+      
+      return `${year}${month}${day}${urutan}`;
+    }
+
+    // API Functions
+    async function apiCall(endpoint, method = 'GET', data = null) {
+      try {
+        const options = {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        };
+
+        if (data && method !== 'GET') {
+          options.body = JSON.stringify(data);
+        }
+
+        const response = await fetch(`${API_BASE}?action=${endpoint}`, options);
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'API Error');
+        }
+
+        return result;
+      } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+      }
+    }
+
+    async function loadAllData() {
+      try {
+        const data = await apiCall('getAll');
+        allData = {
+          users: data.users || [],
+          surat: data.surat || [],
+          instansi: data.instansi || null
+        };
+      } catch (error) {
+        showToast('Gagal memuat data: ' + error.message, 'error');
+      }
+    }
+
+    // Auth Functions
+    async function handleLogin(e) {
+      e.preventDefault();
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span>Masuk...';
+
+      const formData = new FormData(e.target);
+      const username = formData.get('username');
+      const password = formData.get('password');
+
+      const user = allData.users.find(u => u.username === username && u.password === password);
+
+      if (user) {
+        currentUser = user;
+        showToast('Login berhasil! Selamat datang ' + user.namaLengkap);
+        render();
+      } else {
+        showToast('Username atau password salah', 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span>Mendaftar...';
+
+      const formData = new FormData(e.target);
+      const username = formData.get('username');
+      const password = formData.get('password');
+      const namaLengkap = formData.get('nama_lengkap');
+
+      const existingUser = allData.users.find(u => u.username === username);
+
+      if (existingUser) {
+        showToast('Username sudah terdaftar', 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        return;
+      }
+
+      try {
+        await apiCall('createUser', 'POST', {
+          username,
+          password,
+          namaLengkap
+        });
+
+        await loadAllData();
+        showToast('Registrasi berhasil! Silakan login');
+        showRegister = false;
+        render();
+      } catch (error) {
+        showToast('Gagal mendaftar: ' + error.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      showToast('Logout berhasil');
+      render();
+    }
+
+    // CRUD Functions
+    async function handleSubmitSurat(e) {
+      e.preventDefault();
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span>Menyimpan...';
+
+      const formData = new FormData(e.target);
+
+      try {
+        if (editingRecord) {
+          await apiCall('updateSurat', 'POST', {
+            backendId: editingRecord.backendId,
+            nomorSurat: formData.get('nomor_surat'),
+            tanggalSurat: formData.get('tanggal_surat'),
+            tanggalTerima: formData.get('tanggal_terima'),
+            pengirim: formData.get('pengirim'),
+            perihal: formData.get('perihal'),
+            linkPdf: formData.get('link_pdf') || ''
+          });
+
+          showToast('Surat berhasil diupdate');
+          editingRecord = null;
+        } else {
+          const tanggalSurat = formData.get('tanggal_surat');
+          const nomorAgenda = generateNomorAgenda(tanggalSurat);
+
+          await apiCall('createSurat', 'POST', {
+            nomorAgenda,
+            nomorSurat: formData.get('nomor_surat'),
+            tanggalSurat,
+            tanggalTerima: formData.get('tanggal_terima'),
+            pengirim: formData.get('pengirim'),
+            perihal: formData.get('perihal'),
+            linkPdf: formData.get('link_pdf') || ''
+          });
+
+          showToast('Surat berhasil ditambahkan');
+        }
+
+        await loadAllData();
+        e.target.reset();
+        render();
+      } catch (error) {
+        showToast('Gagal menyimpan: ' + error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    function startEdit(index) {
+      editingRecord = allData.surat[index];
+      render();
+      setTimeout(() => {
+        document.getElementById('nomor_surat').focus();
+      }, 100);
+    }
+
+    function cancelEdit() {
+      editingRecord = null;
+      render();
+    }
+
+    async function deleteSurat(index) {
+      const record = allData.surat[index];
+      
+      showConfirm(
+        `Apakah Anda yakin ingin menghapus surat "${record.nomorSurat}"?`,
+        async () => {
+          try {
+            await apiCall('deleteSurat', 'POST', {
+              backendId: record.backendId
+            });
+
+            await loadAllData();
+            showToast('Surat berhasil dihapus');
+            render();
+          } catch (error) {
+            showToast('Gagal menghapus: ' + error.message, 'error');
+          }
+        }
+      );
+    }
+
+    function printDisposisi(index) {
+      const record = allData.surat[index];
+      showToast('Membuka jendela cetak disposisi...', 'info');
+      
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        showToast('Popup diblokir. Izinkan popup untuk mencetak.', 'error');
+        return;
+      }
+
+      const namaInstansi = allData.instansi ? allData.instansi.namaInstansi : 'INSTANSI';
+      const alamat = allData.instansi ? allData.instansi.alamat : 'Alamat Instansi';
+      const telepon = allData.instansi ? allData.instansi.telepon : '(021) 12345678';
+      const namaKepala = allData.instansi ? allData.instansi.namaKepala : '';
+      const nipKepala = allData.instansi ? allData.instansi.nipKepala : '';
+
+      const formatTanggal = (dateStr) => {
+        const date = new Date(dateStr);
+        const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return date.getDate() + ' ' + bulan[date.getMonth()] + ' ' + date.getFullYear();
+      };
+
+      const tanggalSurat = formatTanggal(record.tanggalSurat);
+      const tanggalTerima = formatTanggal(record.tanggalTerima);
+      
+      printWindow.document.write('<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8">');
+      printWindow.document.write('<title>Disposisi Surat</title>');
+      printWindow.document.write('<style>');
+      printWindow.document.write('* { margin: 0; padding: 0; box-sizing: border-box; }');
+      printWindow.document.write('body { font-family: Arial, sans-serif; padding: 20px; }');
+      printWindow.document.write('.container { max-width: 800px; margin: 0 auto; border: 2px solid #000; }');
+      printWindow.document.write('.header { border-bottom: 3px solid #000; padding: 20px; text-align: center; }');
+      printWindow.document.write('.header h1 { font-size: 20px; margin-bottom: 4px; }');
+      printWindow.document.write('.header h2 { font-size: 24px; margin-bottom: 8px; }');
+      printWindow.document.write('.title { text-align: center; padding: 12px; font-size: 18px; font-weight: bold; border-bottom: 2px solid #000; }');
+      printWindow.document.write('.content { padding: 20px; }');
+      printWindow.document.write('.row { display: table; width: 100%; margin-bottom: 10px; }');
+      printWindow.document.write('.label { display: table-cell; width: 30%; font-weight: bold; padding: 8px; border: 1px solid #000; }');
+      printWindow.document.write('.value { display: table-cell; width: 70%; padding: 8px; border: 1px solid #000; }');
+      printWindow.document.write('.section { border: 2px solid #000; padding: 15px; margin-top: 20px; }');
+      printWindow.document.write('.section-title { font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 8px; }');
+      printWindow.document.write('.checkbox-item { margin: 8px 0; }');
+      printWindow.document.write('.checkbox { width: 16px; height: 16px; border: 2px solid #000; display: inline-block; margin-right: 8px; }');
+      printWindow.document.write('.catatan { border: 1px solid #000; min-height: 80px; padding: 10px; margin-top: 10px; }');
+      printWindow.document.write('.signatures { margin-top: 30px; text-align: center; }');
+      printWindow.document.write('.sig-label { font-weight: bold; margin-bottom: 60px; }');
+      printWindow.document.write('.sig-name { font-weight: bold; border-bottom: 1px solid #000; display: inline-block; padding: 0 20px 2px; }');
+      printWindow.document.write('</style></head><body>');
+      printWindow.document.write('<div class="container">');
+      printWindow.document.write('<div class="header">');
+      printWindow.document.write('<h1>' + namaInstansi + '</h1>');
+      printWindow.document.write('<h2>LEMBAR DISPOSISI</h2>');
+      printWindow.document.write('<p>' + alamat + ' | Telp: ' + telepon + '</p>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('<div class="title">INFORMASI SURAT MASUK</div>');
+      printWindow.document.write('<div class="content">');
+      printWindow.document.write('<div class="row"><div class="label">Nomor Agenda</div><div class="value">' + (record.nomorAgenda || '-') + '</div></div>');
+      printWindow.document.write('<div class="row"><div class="label">Nomor Surat</div><div class="value">' + record.nomorSurat + '</div></div>');
+      printWindow.document.write('<div class="row"><div class="label">Tanggal Surat</div><div class="value">' + tanggalSurat + '</div></div>');
+      printWindow.document.write('<div class="row"><div class="label">Tanggal Terima</div><div class="value">' + tanggalTerima + '</div></div>');
+      printWindow.document.write('<div class="row"><div class="label">Pengirim</div><div class="value">' + record.pengirim + '</div></div>');
+      printWindow.document.write('<div class="row"><div class="label">Perihal</div><div class="value">' + record.perihal + '</div></div>');
+      printWindow.document.write('<div class="section">');
+      printWindow.document.write('<div class="section-title">INSTRUKSI DISPOSISI</div>');
+      printWindow.document.write('<div class="checkbox-item"><span class="checkbox"></span> Segera Proses</div>');
+      printWindow.document.write('<div class="checkbox-item"><span class="checkbox"></span> Pelajari dan Laporkan</div>');
+      printWindow.document.write('<div class="checkbox-item"><span class="checkbox"></span> Koordinasikan</div>');
+      printWindow.document.write('<div class="checkbox-item"><span class="checkbox"></span> Untuk Diketahui</div>');
+      printWindow.document.write('<div class="checkbox-item"><span class="checkbox"></span> Simpan Arsip</div>');
+      printWindow.document.write('<strong>Catatan:</strong><div class="catatan"></div>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('<div class="signatures">');
+      printWindow.document.write('<div class="sig-label">Pemberi Disposisi</div>');
+      printWindow.document.write('<div class="sig-name">(' + namaKepala + ')</div>');
+      printWindow.document.write('<div>NIP/NRP. ' + nipKepala + '</div>');
+      printWindow.document.write('</div>');
+      printWindow.document.write('</div></div>');
+      printWindow.document.write('<script>window.onload = function() { setTimeout(function() { window.print(); }, 500); }<\/script>');
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+    }
+
+    function openSettings() {
+      const modal = document.getElementById('settingsModal');
+      modal.classList.add('active');
+    }
+
+    function closeSettings() {
+      const modal = document.getElementById('settingsModal');
+      modal.classList.remove('active');
+    }
+
+    async function handleSettingsSubmit(e) {
+      e.preventDefault();
+      
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span>Menyimpan...';
+
+      const formData = new FormData(e.target);
+
+      try {
+        await apiCall('saveInstansi', 'POST', {
+          namaInstansi: formData.get('nama_instansi'),
+          logoUrl: formData.get('logo_url'),
+          alamat: formData.get('alamat'),
+          telepon: formData.get('telepon'),
+          namaKepala: formData.get('nama_kepala'),
+          nipKepala: formData.get('nip_kepala')
+        });
+
+        await loadAllData();
+        showToast('Pengaturan instansi berhasil disimpan');
+        closeSettings();
+        render();
+      } catch (error) {
+        showToast('Gagal menyimpan: ' + error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    // Render Functions
+    function renderLogin() {
+      return `
+        <div class="login-container">
+          <div class="login-card">
+            <h1 class="login-title">📋 Agenda Surat Masuk</h1>
+            <p class="login-subtitle">${showRegister ? 'Daftar akun baru' : 'Silakan login untuk melanjutkan'}</p>
+
+            ${!showRegister ? `
+              <form onsubmit="handleLogin(event); return false;">
+                <div class="form-group">
+                  <label>Username</label>
+                  <input type="text" name="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                  <label>Password</label>
+                  <input type="password" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Masuk</button>
+              </form>
+              <div style="text-align: center; margin-top: 16px;">
+                <a href="#" onclick="showRegister = true; render(); return false;" style="color: #3b82f6;">Belum punya akun? Daftar di sini</a>
+              </div>
+            ` : `
+              <form onsubmit="handleRegister(event); return false;">
+                <div class="form-group">
+                  <label>Nama Lengkap</label>
+                  <input type="text" name="nama_lengkap" required>
+                </div>
+                <div class="form-group">
+                  <label>Username</label>
+                  <input type="text" name="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                  <label>Password</label>
+                  <input type="password" name="password" required autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Daftar</button>
+              </form>
+              <div style="text-align: center; margin-top: 16px;">
+                <a href="#" onclick="showRegister = false; render(); return false;" style="color: #3b82f6;">Sudah punya akun? Login di sini</a>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDashboard() {
+      const totalSurat = allData.surat.length;
+
+      let tableRows = '';
+      if (allData.surat.length === 0) {
+        tableRows = `
+          <tr>
+            <td colspan="9" class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <div>Belum ada data surat masuk</div>
+            </td>
+          </tr>
+        `;
+      } else {
+        tableRows = allData.surat.map((record, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td><strong>${record.nomorAgenda || '-'}</strong></td>
+            <td>${record.nomorSurat}</td>
+            <td>${record.tanggalSurat}</td>
+            <td>${record.tanggalTerima}</td>
+            <td>${record.pengirim}</td>
+            <td>${record.perihal}</td>
+            <td>
+              ${record.linkPdf ? `<a href="${record.linkPdf}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary">📄 Buka</a>` : '-'}
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button onclick="startEdit(${index})" class="btn btn-sm btn-primary">Edit</button>
+                <button onclick="deleteSurat(${index})" class="btn btn-sm btn-danger">Hapus</button>
+                <button onclick="printDisposisi(${index})" class="btn btn-sm btn-success">🖨️ Cetak</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      return `
+        <div class="container">
+          <div class="header">
+            <div class="header-left">
+              ${allData.instansi && allData.instansi.logoUrl ? `
+                <img src="${allData.instansi.logoUrl}" alt="Logo" class="logo" onerror="this.style.display='none'">
+              ` : ''}
+              <div class="header-title">
+                ${allData.instansi ? `<div style="font-size: 18px; font-weight: 600; color: #1e293b;">${allData.instansi.namaInstansi}</div>` : ''}
+                <h1>Agenda Surat Masuk</h1>
+              </div>
+            </div>
+            <div class="header-right">
+              <button onclick="openSettings()" class="btn btn-primary">⚙️ Pengaturan</button>
+              <span class="user-info">👤 ${currentUser.namaLengkap}</span>
+              <button onclick="handleLogout()" class="btn btn-secondary">Logout</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-number">${totalSurat}</div>
+                <div class="stat-label">Total Surat Masuk</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title">${editingRecord ? 'Edit Surat' : 'Tambah Surat Baru'}</h2>
+            <form onsubmit="handleSubmitSurat(event); return false;">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Nomor Surat</label>
+                  <input type="text" name="nomor_surat" id="nomor_surat" required value="${editingRecord ? editingRecord.nomorSurat : ''}">
+                </div>
+                <div class="form-group">
+                  <label>Tanggal Surat</label>
+                  <input type="date" name="tanggal_surat" required value="${editingRecord ? editingRecord.tanggalSurat : ''}">
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Tanggal Terima</label>
+                  <input type="date" name="tanggal_terima" required value="${editingRecord ? editingRecord.tanggalTerima : ''}">
+                </div>
+                <div class="form-group">
+                  <label>Pengirim</label>
+                  <input type="text" name="pengirim" required value="${editingRecord ? editingRecord.pengirim : ''}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Perihal</label>
+                <textarea name="perihal" required>${editingRecord ? editingRecord.perihal : ''}</textarea>
+              </div>
+              <div class="form-group">
+                <label>📎 Link PDF Google Drive (Opsional)</label>
+                <input type="url" name="link_pdf" value="${editingRecord && editingRecord.linkPdf ? editingRecord.linkPdf : ''}" placeholder="https://drive.google.com/file/d/...">
+                <small style="color: #64748b; margin-top: 4px; display: block;">💡 Upload PDF ke Google Drive, lalu paste link sharing-nya di sini</small>
+              </div>
+              <div style="display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-primary">${editingRecord ? 'Update Surat' : 'Tambah Surat'}</button>
+                ${editingRecord ? '<button type="button" onclick="cancelEdit()" class="btn btn-secondary">Batal</button>' : ''}
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title">Daftar Surat Masuk</h2>
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nomor Agenda</th>
+                    <th>Nomor Surat</th>
+                    <th>Tanggal Surat</th>
+                    <th>Tanggal Terima</th>
+                    <th>Pengirim</th>
+                    <th>Perihal</th>
+                    <th>PDF</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tableRows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="settingsModal" class="modal">
+          <div class="modal-content">
+            <h2 class="modal-header">Pengaturan Instansi</h2>
+            <form onsubmit="handleSettingsSubmit(event); return false;">
+              <div class="form-group">
+                <label>Nama Instansi</label>
+                <input type="text" name="nama_instansi" required value="${allData.instansi ? allData.instansi.namaInstansi : ''}" placeholder="Contoh: Dinas Pendidikan Kota Jakarta">
+              </div>
+              <div class="form-group">
+                <label>URL Logo</label>
+                <input type="url" name="logo_url" required value="${allData.instansi ? allData.instansi.logoUrl : ''}" placeholder="https://example.com/logo.png">
+              </div>
+              <div class="form-group">
+                <label>Alamat Lengkap</label>
+                <textarea name="alamat" required>${allData.instansi ? allData.instansi.alamat : ''}</textarea>
+              </div>
+              <div class="form-group">
+                <label>Nomor Telepon</label>
+                <input type="text" name="telepon" required value="${allData.instansi ? allData.instansi.telepon : ''}" placeholder="(021) 12345678">
+              </div>
+              <div class="form-group">
+                <label>Nama Kepala/Pimpinan</label>
+                <input type="text" name="nama_kepala" required value="${allData.instansi ? allData.instansi.namaKepala : ''}" placeholder="Dr. Ahmad Suryadi, M.Si">
+              </div>
+              <div class="form-group">
+                <label>NIP/NRP Kepala/Pimpinan</label>
+                <input type="text" name="nip_kepala" required value="${allData.instansi ? allData.instansi.nipKepala : ''}" placeholder="197501012000031001">
+              </div>
+              <div class="modal-footer">
+                <button type="button" onclick="closeSettings()" class="btn btn-secondary">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    function render() {
+      const app = document.getElementById('app');
+      
+      if (!currentUser) {
+        app.innerHTML = renderLogin();
+      } else {
+        app.innerHTML = renderDashboard();
+      }
+    }
+
+    // Initialize
+    (async () => {
+      await loadAllData();
+      render();
+    })();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a8a0caad216fe8f',t:'MTc2NDgzODE1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
