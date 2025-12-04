@@ -1,0 +1,12 @@
+{
+  "name": "agenda-surat-masuk",
+  "version": "1.0.0",
+  "description": "Aplikasi Agenda Surat Masuk dengan Google Sheets",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests\" && exit 0"
+  },
+  "dependencies": {
+    "googleapis": "^128.0.0"
+  }
+}

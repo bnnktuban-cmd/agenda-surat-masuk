@@ -1,0 +1,333 @@
+const { google } = require('googleapis');
+
+// Parse credentials dari environment variable
+const getCredentials = () => {
+  try {
+    return JSON.parse(process.env.GOOGLE_CREDENTIALS);
+  } catch (error) {
+    throw new Error('Invalid GOOGLE_CREDENTIALS environment variable');
+  }
+};
+
+// Initialize Google Sheets API
+const getSheets = async () => {
+  const credentials = getCredentials();
+  const auth = new google.auth.GoogleAuth({
+    credentials,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+
+  const authClient = await auth.getClient();
+  return google.sheets({ version: 'v4', auth: authClient });
+};
+
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+
+// Helper: Generate ID
+const generateId = () => {
+  return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+};
+
+// Helper: Get all rows from a sheet
+const getAllRows = async (sheets, sheetName) => {
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${sheetName}!A2:Z`,
+    });
+
+    return response.data.values || [];
+  } catch (error) {
+    console.error(`Error getting rows from ${sheetName}:`, error);
+    return [];
+  }
+};
+
+// Helper: Append row to sheet
+const appendRow = async (sheets, sheetName, values) => {
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${sheetName}!A:Z`,
+    valueInputOption: 'RAW',
+    resource: {
+      values: [values],
+    },
+  });
+};
+
+// Helper: Update row in sheet
+const updateRow = async (sheets, sheetName, rowIndex, values) => {
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${sheetName}!A${rowIndex}:Z${rowIndex}`,
+    valueInputOption: 'RAW',
+    resource: {
+      values: [values],
+    },
+  });
+};
+
+// Helper: Delete row from sheet
+const deleteRow = async (sheets, sheetName, rowIndex) => {
+  const sheetId = await getSheetId(sheets, sheetName);
+  
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: SPREADSHEET_ID,
+    resource: {
+      requests: [{
+        deleteDimension: {
+          range: {
+            sheetId: sheetId,
+            dimension: 'ROWS',
+            startIndex: rowIndex - 1,
+            endIndex: rowIndex,
+          },
+        },
+      }],
+    },
+  });
+};
+
+// Helper: Get sheet ID by name
+const getSheetId = async (sheets, sheetName) => {
+  const response = await sheets.spreadsheets.get({
+    spreadsheetId: SPREADSHEET_ID,
+  });
+
+  const sheet = response.data.sheets.find(s => s.properties.title === sheetName);
+  return sheet ? sheet.properties.sheetId : 0;
+};
+
+// API Handlers
+const handlers = {
+  // Get All Data
+  async getAll(sheets) {
+    const usersRows = await getAllRows(sheets, 'Users');
+    const suratRows = await getAllRows(sheets, 'Surat Masuk');
+    const instansiRows = await getAllRows(sheets, 'Instansi');
+
+    const users = usersRows.map(row => ({
+      backendId: row[0],
+      username: row[1],
+      password: row[2],
+      namaLengkap: row[3],
+      tanggalInput: row[4],
+    }));
+
+    const surat = suratRows.map(row => ({
+      backendId: row[0],
+      nomorAgenda: row[1],
+      nomorSurat: row[2],
+      tanggalSurat: row[3],
+      tanggalTerima: row[4],
+      pengirim: row[5],
+      perihal: row[6],
+      linkPdf: row[7],
+      tanggalInput: row[8],
+    }));
+
+    const instansi = instansiRows.length > 0 ? {
+      backendId: instansiRows[0][0],
+      namaInstansi: instansiRows[0][1],
+      logoUrl: instansiRows[0][2],
+      alamat: instansiRows[0][3],
+      telepon: instansiRows[0][4],
+      namaKepala: instansiRows[0][5],
+      nipKepala: instansiRows[0][6],
+      tanggalInput: instansiRows[0][7],
+    } : null;
+
+    return { users, surat, instansi };
+  },
+
+  // Create User
+  async createUser(sheets, data) {
+    const backendId = generateId();
+    const tanggalInput = new Date().toISOString();
+
+    await appendRow(sheets, 'Users', [
+      backendId,
+      data.username,
+      data.password,
+      data.namaLengkap,
+      tanggalInput,
+    ]);
+
+    return { success: true, backendId };
+  },
+
+  // Create Surat
+  async createSurat(sheets, data) {
+    const backendId = generateId();
+    const tanggalInput = new Date().toISOString();
+
+    await appendRow(sheets, 'Surat Masuk', [
+      backendId,
+      data.nomorAgenda,
+      data.nomorSurat,
+      data.tanggalSurat,
+      data.tanggalTerima,
+      data.pengirim,
+      data.perihal,
+      data.linkPdf || '',
+      tanggalInput,
+    ]);
+
+    return { success: true, backendId };
+  },
+
+  // Update Surat
+  async updateSurat(sheets, data) {
+    const rows = await getAllRows(sheets, 'Surat Masuk');
+    const rowIndex = rows.findIndex(row => row[0] === data.backendId);
+
+    if (rowIndex === -1) {
+      throw new Error('Surat tidak ditemukan');
+    }
+
+    const existingRow = rows[rowIndex];
+    await updateRow(sheets, 'Surat Masuk', rowIndex + 2, [
+      data.backendId,
+      existingRow[1], // Keep nomor agenda
+      data.nomorSurat,
+      data.tanggalSurat,
+      data.tanggalTerima,
+      data.pengirim,
+      data.perihal,
+      data.linkPdf || '',
+      existingRow[8], // Keep original tanggalInput
+    ]);
+
+    return { success: true };
+  },
+
+  // Delete Surat
+  async deleteSurat(sheets, data) {
+    const rows = await getAllRows(sheets, 'Surat Masuk');
+    const rowIndex = rows.findIndex(row => row[0] === data.backendId);
+
+    if (rowIndex === -1) {
+      throw new Error('Surat tidak ditemukan');
+    }
+
+    await deleteRow(sheets, 'Surat Masuk', rowIndex + 2);
+
+    return { success: true };
+  },
+
+  // Save Instansi
+  async saveInstansi(sheets, data) {
+    const rows = await getAllRows(sheets, 'Instansi');
+    const tanggalInput = new Date().toISOString();
+
+    if (rows.length === 0) {
+      // Create new
+      const backendId = generateId();
+      await appendRow(sheets, 'Instansi', [
+        backendId,
+        data.namaInstansi,
+        data.logoUrl,
+        data.alamat,
+        data.telepon,
+        data.namaKepala,
+        data.nipKepala,
+        tanggalInput,
+      ]);
+    } else {
+      // Update existing
+      const backendId = rows[0][0];
+      await updateRow(sheets, 'Instansi', 2, [
+        backendId,
+        data.namaInstansi,
+        data.logoUrl,
+        data.alamat,
+        data.telepon,
+        data.namaKepala,
+        data.nipKepala,
+        rows[0][7] || tanggalInput, // Keep original or set new
+      ]);
+    }
+
+    return { success: true };
+  },
+};
+
+// Main Handler
+exports.handler = async (event) => {
+  // CORS headers
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  };
+
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers,
+      body: '',
+    };
+  }
+
+  try {
+    // Check environment variables
+    if (!process.env.GOOGLE_CREDENTIALS || !process.env.SPREADSHEET_ID) {
+      throw new Error('Missing environment variables');
+    }
+
+    const sheets = await getSheets();
+    const action = event.queryStringParameters?.action;
+
+    if (!action) {
+      throw new Error('Missing action parameter');
+    }
+
+    let result;
+    let requestData = {};
+
+    if (event.httpMethod === 'POST' && event.body) {
+      requestData = JSON.parse(event.body);
+    }
+
+    // Route to appropriate handler
+    switch (action) {
+      case 'getAll':
+        result = await handlers.getAll(sheets);
+        break;
+      case 'createUser':
+        result = await handlers.createUser(sheets, requestData);
+        break;
+      case 'createSurat':
+        result = await handlers.createSurat(sheets, requestData);
+        break;
+      case 'updateSurat':
+        result = await handlers.updateSurat(sheets, requestData);
+        break;
+      case 'deleteSurat':
+        result = await handlers.deleteSurat(sheets, requestData);
+        break;
+      case 'saveInstansi':
+        result = await handlers.saveInstansi(sheets, requestData);
+        break;
+      default:
+        throw new Error('Unknown action: ' + action);
+    }
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(result),
+    };
+  } catch (error) {
+    console.error('Error:', error);
+
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        error: error.message || 'Internal server error',
+      }),
+    };
+  }
+};
